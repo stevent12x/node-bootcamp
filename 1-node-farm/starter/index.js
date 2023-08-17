@@ -40,7 +40,7 @@ const templateProduct = fs.readFileSync(`${__dirname}/templates/template_product
 const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, 'utf-8');
 const dataObject = JSON.parse(data);
 dataObject.map((product) => {
-	product['slug'] = slugify(product.productName.toLowerCase());
+	product['slug'] = slugify(product.productName, { replacement: '_', lower: true });
 });
 
 const server = http.createServer((req, res) => {

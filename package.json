@@ -4,7 +4,8 @@
   "description": "Learning node.js",
   "main": "1-node-farm/starter/index.js",
   "scripts": {
-    "start": "nodemon 1-node-farm/starter/index.js"
+    "start-one": "nodemon 1-node-farm/starter/index.js",
+    "start-two": "nodemon 2-how-node-works/starter/streams.js"
   },
   "author": "sturner",
   "license": "ISC",
