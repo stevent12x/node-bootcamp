@@ -1,26 +1,6 @@
 {
-  "arrowParens": "avoid",
-  "bracketSpacing": true,
-  "customSyntax": [],
-  "endOfLine": "lf",
-  "htmlWhitespaceSensitivity": "strict",
-  "bracketSameLine": false,
-  "overrides": [
-    {
-      "files": "*.js",
-      "options": {
-        "parser": "babel-eslint"
-      }
-    }
-  ],
-  "printWidth": 120,
-  "quoteProps": "as-needed",
-  "requireConfig": false,
-  "semi": true,
   "singleQuote": true,
-  "tabWidth": 2,
+  "arrowParens": "avoid",
   "trailingComma": "none",
-  "useTabs": false,
-  "vueIndentScriptAndStyle": false,
-  "singleAttributePerLine": true
+  "tabWidth": 3
 }
