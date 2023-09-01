@@ -205,19 +205,5 @@
       "2022-01-16,10:00",
       "2022-12-12,10:00"
     ]
-  },
-  {
-    "id": 9,
-    "name": "Some New Tour",
-    "duration": 5,
-    "difficulty": "easy",
-    "price": 500
-  },
-  {
-    "id": 10,
-    "name": "Some Different Tour",
-    "duration": 9,
-    "difficulty": "difficult",
-    "price": 5000
   }
 ]
