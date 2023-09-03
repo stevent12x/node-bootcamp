@@ -2,12 +2,12 @@ class APIFeatures {
    constructor(query, queryString) {
       this.query = query;
       this.queryString = queryString;
+      this.excludedFields = ['page', 'sort', 'limit', 'fields'];
    }
 
    filter() {
       const queryObj = { ...this.queryString };
-      const excludedFields = ['page', 'sort', 'limit', 'fields'];
-      excludedFields.forEach(el => delete queryObj[el]);
+      this.excludedFields.forEach(el => delete queryObj[el]);
 
       // Advanced filtering
       let queryStr = JSON.stringify(queryObj);

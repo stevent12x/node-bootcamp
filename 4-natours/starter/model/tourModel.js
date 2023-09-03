@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-exports.Tour = mongoose.model(
+const Tour = mongoose.model(
    'Tour',
    new mongoose.Schema({
       name: {
@@ -57,3 +57,5 @@ exports.Tour = mongoose.model(
       startDates: [Date]
    })
 );
+
+module.exports = Tour;

@@ -1,6 +1,7 @@
-const model = require('./../model/tourModel');
+const Tour = require('./../model/tourModel');
 const APIFeatures = require('./../utils/apiFeatures');
 
+// route alias for '/cheapest-top-five'
 exports.aliasTopTours = async (req, res, next) => {
    req.query.limit = '5';
    req.query.sort = '-ratingsAverage price';
@@ -11,7 +12,7 @@ exports.aliasTopTours = async (req, res, next) => {
 exports.getAllTours = async (req, res) => {
    try {
       // Execute query
-      const features = new APIFeatures(model.Tour.find(), req.query)
+      const features = new APIFeatures(Tour.find(), req.query)
          .filter()
          .sort()
          .limitFields()
@@ -37,7 +38,7 @@ exports.getAllTours = async (req, res) => {
 
 exports.getTourById = async (req, res) => {
    try {
-      const tour = await model.Tour.findById(req.params.id);
+      const tour = await Tour.findById(req.params.id);
 
       res.status(200).json({
          status: 'success',
@@ -56,7 +57,7 @@ exports.getTourById = async (req, res) => {
 
 exports.createTour = async (req, res) => {
    try {
-      const tour = await model.Tour.create(req.body);
+      const tour = await Tour.create(req.body);
 
       res.status(201).json({
          status: 'success',
@@ -75,7 +76,7 @@ exports.createTour = async (req, res) => {
 
 exports.updateTourById = async (req, res) => {
    try {
-      const tour = await model.Tour.findByIdAndUpdate(req.params.id, req.body, {
+      const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
          new: true,
          runValidators: true
       });
@@ -97,7 +98,7 @@ exports.updateTourById = async (req, res) => {
 
 exports.deleteTourById = async (req, res) => {
    try {
-      await model.Tour.findByIdAndDelete(req.params.id);
+      await Tour.findByIdAndDelete(req.params.id);
 
       res.status(204).json({
          status: 'success',
