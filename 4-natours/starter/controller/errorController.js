@@ -12,7 +12,6 @@ const handleDuplicateFieldsDB = err => {
 
 const handleValidationErrorDB = err => {
    const errors = Object.values(err.errors).map(el => el.message);
-
    const message = `Validation failed: ${errors.join('. ')}`;
    return new AppError(message, 400);
 };
