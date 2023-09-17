@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
 const validator = require('validator');
-const { ignore } = require('nodemon/lib/rules');
 
 const tourSchema = new mongoose.Schema(
    {
