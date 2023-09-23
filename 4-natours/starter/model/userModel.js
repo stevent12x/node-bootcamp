@@ -25,6 +25,10 @@ const userSchema = new mongoose.Schema({
    photo: {
       type: String
    },
+   role: {
+      type: String,
+      default: 'user'
+   },
    password: {
       type: String,
       required: [true, 'Password is required'],
@@ -41,10 +45,7 @@ const userSchema = new mongoose.Schema({
          message: 'Passwords do not match'
       }
    },
-   passwordChangedAt: {
-      type: Date,
-      required: [true, 'Password changed at is required']
-   }
+   passwordChangedAt: Date
 });
 
 userSchema.pre('save', async function (next) {
