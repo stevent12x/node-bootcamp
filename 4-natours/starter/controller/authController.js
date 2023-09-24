@@ -3,10 +3,25 @@ const jwt = require('jsonwebtoken');
 const User = require('../model/userModel');
 const catchAsync = require('../util/catchAsync');
 const AppError = require('../util/appError');
+const SendEmail = require('../util/email');
+const crypto = require('crypto');
 
 const signToken = id => {
    return jwt.sign({ id }, process.env.JWT_SECRET, {
       expiresIn: process.env.JWT_EXPIRES_IN
+   });
+};
+
+// Log user in, send JWT
+const createAndSendToken = (user, statusCode, res) => {
+   const token = signToken(user._id);
+
+   res.status(statusCode).json({
+      status: 'success',
+      token,
+      data: {
+         user: user
+      }
    });
 };
 
@@ -18,15 +33,7 @@ exports.signup = catchAsync(async (req, res, next) => {
       passwordConfirm: req.body.passwordConfirm
    });
 
-   const token = signToken(newUser._id);
-
-   res.status(201).json({
-      status: 'success',
-      token,
-      data: {
-         user: newUser
-      }
-   });
+   createAndSendToken(newUser, 201, res);
 });
 
 exports.login = catchAsync(async (req, res, next) => {
@@ -45,11 +52,7 @@ exports.login = catchAsync(async (req, res, next) => {
    }
 
    // 3) Send token to client
-   const token = signToken(user._id);
-   res.status(200).json({
-      status: 'success',
-      token
-   });
+   createAndSendToken(user, 200, res);
 });
 
 // User authentication middleware
@@ -108,3 +111,84 @@ exports.restrictTo = (...roles) => {
       next();
    };
 };
+
+exports.requestPasswordReset = catchAsync(async (req, res, next) => {
+   // 1) Get User based on email
+   const user = await User.findOne({ email: req.body.email });
+   if (!user) {
+      return next(new AppError('User not found', 404));
+   }
+   // 2) Generate random token
+   const token = await user.createPasswordResetToken();
+   await user.save({ validateBeforeSave: false });
+   // 3) Send token as email
+   const resetURL = `${req.protocol}://${req.get(
+      'host'
+   )}/api/v1/users/resetPassword/${token}`;
+
+   const message = `Forgot your password? Submit a PATCH req with your new password and passwordConfirm to: ${resetURL}\nIf you didn't request a password reset, please ignore this email.`;
+
+   try {
+      await SendEmail({
+         email: user.email,
+         subject: 'Your password reset token - only valid for 10 mins',
+         message
+      });
+
+      res.status(200).json({
+         status: 'success',
+         message: 'Reset password token send successfully'
+      });
+   } catch (err) {
+      user.passwordResetToken = undefined;
+      user.passwordResetExpiresAt = undefined;
+      await user.save({ validateBeforeSave: false });
+
+      return next(new AppError(`${err.message}`, 500));
+   }
+});
+
+exports.resetPassword = catchAsync(async (req, res, next) => {
+   // 1) Get user by token
+   const hashedToken = crypto
+      .createHash('sha256')
+      .update(req.params.token)
+      .digest('hex');
+
+   const user = await User.findOne({
+      passwordResetToken: hashedToken,
+      passwordResetExpiresAt: { $gt: Date.now() }
+   });
+
+   // 2) Set new password if user and token not expired
+   if (!user) {
+      return next(new AppError('Token is invalid or has expired', 400));
+   }
+
+   user.password = req.body.password;
+   user.passwordConfirm = req.body.passwordConfirm;
+   user.passwordResetToken = undefined;
+   user.passwordResetExpiresAt = undefined;
+   await user.save();
+
+   // 4) Log in user, send JWT
+   createAndSendToken(user, 200, res);
+});
+
+exports.updatePassword = catchAsync(async (req, res, next) => {
+   // 1) Get the user from collection
+   const user = await User.findById(req.user.id).select('+password');
+
+   // 2) Check if POSTed current password is correct
+   if (!(await user.verifyPassword(req.body.passwordCurrent, user.password))) {
+      return next(new AppError('Password is incorrect', 401));
+   }
+
+   // 3) If so, update password
+   user.password = req.body.password;
+   user.passwordConfirm = req.body.passwordConfirm;
+   await user.save();
+
+   // 4) Log user in, send JWT
+   createAndSendToken(user, 200, res);
+});
