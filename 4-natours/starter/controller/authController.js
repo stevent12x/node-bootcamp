@@ -91,7 +91,7 @@ exports.protect = catchAsync(async (req, res, next) => {
       );
    }
 
-   // Grant access to protected route
+   // Grant access to protected route and assign user to currentUser
    req.user = currentUser;
    next();
 });

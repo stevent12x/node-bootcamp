@@ -48,7 +48,12 @@ const userSchema = new mongoose.Schema({
    },
    passwordChangedAt: Date,
    passwordResetToken: String,
-   passwordResetExpiresAt: Date
+   passwordResetExpiresAt: Date,
+   active: {
+      type: Boolean,
+      default: true,
+      select: false
+   }
 });
 
 userSchema.pre('save', async function (next) {
@@ -59,11 +64,16 @@ userSchema.pre('save', async function (next) {
    next();
 });
 
-userSchema.pre('save', async function (next) {
+userSchema.pre('save', function (next) {
    if (!this.isModified('password') || this.isNew) return next();
 
    // Make sure the db is updated after the token is issued
    this.passwordChangedAt = Date.now() - 1000;
+   next();
+});
+
+userSchema.pre(/^find/, function (next) {
+   this.find({ active: { $ne: false } });
    next();
 });
 
