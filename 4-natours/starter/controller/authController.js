@@ -12,9 +12,19 @@ const signToken = id => {
    });
 };
 
-// Log user in, send JWT
+// Log user in, send JWT as cookie
 const createAndSendToken = (user, statusCode, res) => {
    const token = signToken(user._id);
+
+   res.cookie('jwt', token, {
+      expires: new Date(
+         Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+      ),
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production'
+   });
+
+   user.password = undefined;
 
    res.status(statusCode).json({
       status: 'success',
@@ -30,7 +40,8 @@ exports.signup = catchAsync(async (req, res, next) => {
       name: req.body.name,
       email: req.body.email,
       password: req.body.password,
-      passwordConfirm: req.body.passwordConfirm
+      passwordConfirm: req.body.passwordConfirm,
+      role: req.body.role
    });
 
    createAndSendToken(newUser, 201, res);
