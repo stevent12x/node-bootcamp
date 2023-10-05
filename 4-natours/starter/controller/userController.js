@@ -21,7 +21,7 @@ exports.getAllUsers = catchAsync(async (req, res, next) => {
       results: users.length,
       requestedAt: req.requestTime,
       data: {
-         tours: users
+         users: users
       }
    });
 });

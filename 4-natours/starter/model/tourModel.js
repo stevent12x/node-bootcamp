@@ -83,7 +83,36 @@ const tourSchema = new mongoose.Schema(
       secretTour: {
          type: Boolean,
          default: false
-      }
+      },
+      startLocation: {
+         type: {
+            type: String,
+            default: 'Point',
+            enum: ['Point']
+         },
+         coordinates: [Number],
+         address: String,
+         description: String
+      },
+      locations: [
+         {
+            type: {
+               type: String,
+               default: 'Point',
+               enum: ['Point']
+            },
+            coordinates: [Number],
+            address: String,
+            description: String,
+            day: Number
+         }
+      ],
+      guides: [
+         {
+            type: mongoose.Schema.ObjectId,
+            ref: 'User'
+         }
+      ]
    },
    {
       toJSON: { virtuals: true },
@@ -95,6 +124,12 @@ tourSchema.virtual('durationWeeks').get(function () {
    return this.duration / 7;
 });
 
+tourSchema.virtual('reviews', {
+   ref: 'Review',
+   foreignField: 'tour',
+   localField: '_id'
+});
+
 // Document Middleware/hook - runs before save() and create() - NOT on insertMany()
 // also called 'pre-save hook'
 tourSchema.pre('save', function (next) {
@@ -102,29 +137,15 @@ tourSchema.pre('save', function (next) {
    next();
 });
 
-// tourSchema.pre('save', function (next) {
-//    console.log('Will save doc...');
-//    next();
-// });
-//
-// tourSchema.post('save', function (res, next) {
-//    console.log(res);
-//    next();
-// });
-
-// Query middleware/hook - points at current query, not resulting doc
-// pre-find hook
 tourSchema.pre(/^find/, function (next) {
-   // tourSchema.pre('find', function (next) {
    this.find({ secretTour: { $ne: true } });
 
    this.start = Date.now();
-   next();
-});
 
-tourSchema.post(/^find/, function (docs, next) {
-   console.log(`Query took... ${Date.now() - this.start} milliseconds.`);
-   // console.log(docs);
+   this.populate({
+      path: 'guides',
+      select: '-__v -passwordChangedAt'
+   });
    next();
 });
 
@@ -132,7 +153,11 @@ tourSchema.post(/^find/, function (docs, next) {
 // Exclude secret tours from aggregation calcs
 tourSchema.pre('aggregate', function (next) {
    this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
-   console.log(this.pipeline());
+   next();
+});
+
+tourSchema.post(/^find/, function (docs, next) {
+   console.log(`Query took... ${Date.now() - this.start} milliseconds.`);
    next();
 });
 
