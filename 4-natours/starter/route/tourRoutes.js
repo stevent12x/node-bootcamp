@@ -1,11 +1,14 @@
 const express = require('express');
 const tourController = require('../controller/tourController');
 const authController = require('../controller/authController');
+const reviewRouter = require('./reviewRoutes');
 
 const router = express.Router();
 
 // Custom middleware
 // router.param('id', tourController.checkID);
+
+router.use('/:tourId/reviews', reviewRouter);
 
 router
    .route('/cheapest-top-five')
@@ -22,7 +25,6 @@ router
    .route('/:id')
    .get(tourController.getTourById)
    .patch(tourController.updateTourById)
-
    .delete(
       authController.protect,
       authController.restrictTo('admin', 'lead-guide'),

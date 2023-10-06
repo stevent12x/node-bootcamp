@@ -1,6 +1,7 @@
 const User = require('../model/userModel');
 const catchAsync = require('../util/catchAsync');
 const AppError = require('../util/appError');
+const factory = require('./handlerFactory');
 
 const sanitizeRequest = (obj, fields) => {
    const sanitizedObject = {};
@@ -12,6 +13,10 @@ const sanitizeRequest = (obj, fields) => {
 
    return sanitizedObject;
 };
+
+// Not for updating passwords
+exports.updateUser = factory.updateById(User);
+exports.deleteUser = factory.deleteById(User);
 
 exports.getAllUsers = catchAsync(async (req, res, next) => {
    const users = await User.find();
@@ -67,22 +72,6 @@ exports.updateCurrentUser = catchAsync(async (req, res, next) => {
 });
 
 exports.getUser = (req, res) => {
-   res.status(500).json({
-      status: 'error',
-      message: 'This route is not defined',
-      requestedAt: req.requestTime
-   });
-};
-
-exports.updateUser = (req, res) => {
-   res.status(500).json({
-      status: 'error',
-      message: 'This route is not defined',
-      requestedAt: req.requestTime
-   });
-};
-
-exports.deleteUser = (req, res) => {
    res.status(500).json({
       status: 'error',
       message: 'This route is not defined',
