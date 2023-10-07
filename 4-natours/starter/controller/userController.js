@@ -17,27 +17,13 @@ const sanitizeRequest = (obj, fields) => {
 // Not for updating passwords
 exports.updateUser = factory.updateById(User);
 exports.deleteUser = factory.deleteById(User);
+exports.getUserById = factory.getById(User);
+exports.getAllUsers = factory.getAll(User);
 
-exports.getAllUsers = catchAsync(async (req, res, next) => {
-   const users = await User.find();
-
-   res.status(200).json({
-      status: 'success',
-      results: users.length,
-      requestedAt: req.requestTime,
-      data: {
-         users: users
-      }
-   });
+exports.getCurrentUser = catchAsync(async (req, res, next) => {
+   req.params.id = req.user.id;
+   next();
 });
-
-exports.createUser = (req, res) => {
-   res.status(500).json({
-      status: 'error',
-      message: 'This route is not defined',
-      requestedAt: req.requestTime
-   });
-};
 
 exports.updateCurrentUser = catchAsync(async (req, res, next) => {
    // Create error if user tries to post password data
@@ -71,14 +57,6 @@ exports.updateCurrentUser = catchAsync(async (req, res, next) => {
    });
 });
 
-exports.getUser = (req, res) => {
-   res.status(500).json({
-      status: 'error',
-      message: 'This route is not defined',
-      requestedAt: req.requestTime
-   });
-};
-
 exports.deleteCurrentUser = catchAsync(async (req, res, next) => {
    await User.findByIdAndUpdate(req.user.id, { active: false });
 
@@ -88,3 +66,11 @@ exports.deleteCurrentUser = catchAsync(async (req, res, next) => {
       data: null
    });
 });
+
+exports.createUser = (req, res) => {
+   res.status(500).json({
+      status: 'error',
+      message: 'This route is not defined. Please use /signup',
+      requestedAt: req.requestTime
+   });
+};

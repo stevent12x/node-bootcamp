@@ -7,6 +7,8 @@ const factory = require('./handlerFactory');
 exports.createTour = factory.createOne(Tour);
 exports.updateTourById = factory.updateById(Tour);
 exports.deleteTourById = factory.deleteById(Tour);
+exports.getTourById = factory.getById(Tour, { path: 'reviews' });
+exports.getAllTours = factory.getAll(Tour);
 
 // route alias for '/cheapest-top-five'
 exports.aliasTopTours = async (req, res, next) => {
@@ -15,42 +17,6 @@ exports.aliasTopTours = async (req, res, next) => {
    req.query.fields = 'name summary price ratingsAverage difficulty';
    next();
 };
-
-exports.getAllTours = catchAsync(async (req, res) => {
-   // Execute query
-   const features = new APIFeatures(Tour.find(), req.query)
-      .filter()
-      .sort()
-      .limitFields()
-      .paginate();
-   const tours = await features.query;
-
-   // Send response
-   res.status(200).json({
-      status: 'success',
-      results: tours.length,
-      requestedAt: req.requestTime,
-      data: {
-         tours: tours
-      }
-   });
-});
-
-exports.getTourById = catchAsync(async (req, res, next) => {
-   const tour = await Tour.findById(req.params.id).populate('reviews');
-
-   if (!tour) {
-      return next(new AppError(`No tour found with ID: ${req.params.id}`, 404));
-   }
-
-   res.status(200).json({
-      status: 'success',
-      requestedAt: req.requestTime,
-      data: {
-         tour: tour
-      }
-   });
-});
 
 exports.getTourStats = catchAsync(async (req, res) => {
    const stats = await Tour.aggregate([
