@@ -65,6 +65,11 @@ const userSchema = new mongoose.Schema(
 userSchema.pre('save', async function (next) {
    if (!this.isModified('password')) return next();
 
+   if (process.env.NODE_ENV === 'LOADER') {
+      this.isNew = true;
+      return next();
+   }
+
    this.password = await bcrypt.hashSync(this.password, 12);
    this.passwordConfirm = undefined;
    next();

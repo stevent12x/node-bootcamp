@@ -15,13 +15,11 @@ const globalErrorHandler = require('./controller/errorController');
 
 const app = express();
 
-// GLOBAL MIDDLEWARE
-
 // Set security HTTP headers
 app.use(helmet());
 
 // HTTP request logging, development only
-console.log(process.env.NODE_ENV);
+console.log(`App running in -- ${process.env.NODE_ENV} -- mode`);
 if (process.env.NODE_ENV === 'development') {
    app.use(morgan('dev'));
 }
