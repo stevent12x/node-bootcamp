@@ -27,5 +27,4 @@ router
       reviewController.updateReviewById
    );
 
-//Testing github
 module.exports = router;
