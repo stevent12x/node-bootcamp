@@ -78,7 +78,7 @@ exports.protect = catchAsync(async (req, res, next) => {
    }
 
    if (!token) {
-      return next(new AppError('No bearer token found', 401));
+      return next(new AppError('Unauthenticated', 401));
    }
 
    // Check if token is valid
