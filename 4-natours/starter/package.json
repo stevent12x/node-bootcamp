@@ -7,7 +7,7 @@
     "start": "env NODE_ENV=development nodemon server.js",
     "start:prod": "env NODE_ENV=production nodemon server.js",
     "debug": "nodemon --inspect server.js",
-    "delete-data": "env NODE_ENV=LOADER&& node ./dev-data/data/import-dev-data.js --delete",
+    "delete-data": "env NODE_ENV=LOADER node ./dev-data/data/import-dev-data.js --delete",
     "import-data": "env NODE_ENV=LOADER node ./dev-data/data/import-dev-data.js --import"
   },
   "author": "stevent",
