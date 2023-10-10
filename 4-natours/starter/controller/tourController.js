@@ -14,7 +14,7 @@ exports.getAllTours = factory.getAll(Tour);
 exports.aliasTopTours = async (req, res, next) => {
    req.query.limit = '5';
    req.query.sort = '-ratingsAverage price';
-   req.query.fields = 'name summary price ratingsAverage difficulty';
+   req.query.fields = '-guides name summary price ratingsAverage difficulty';
    next();
 };
 
@@ -27,11 +27,11 @@ exports.getTourStats = catchAsync(async (req, res) => {
          $group: {
             _id: { $toUpper: '$difficulty' },
             numTours: { $sum: 1 },
-            numRatings: { $sum: { $sum: '$ratingsQuantity' } },
-            avgRating: { $avg: { $avg: '$ratingsAverage' } },
-            avgPrice: { $avg: { $avg: '$price' } },
-            minPrice: { $min: { $min: '$price' } },
-            maxPrice: { $max: { $max: '$price' } }
+            numRatings: { $sum: '$ratingsQuantity' },
+            avgRating: { $avg: '$ratingsAverage' },
+            avgPrice: { $avg: '$price' },
+            minPrice: { $min: '$price' },
+            maxPrice: { $max: '$price' }
          }
       },
       {
