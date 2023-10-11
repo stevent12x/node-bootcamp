@@ -10,6 +10,7 @@ const hpp = require('hpp');
 const tourRouter = require('./route/tourRoutes');
 const userRouter = require('./route/userRoutes');
 const reviewRouter = require('./route/reviewRoutes');
+const viewRouter = require('./route/viewRoutes');
 
 const AppError = require('./util/appError');
 const globalErrorHandler = require('./controller/errorController');
@@ -28,14 +29,14 @@ app.use(helmet());
 // HTTP request logging, development only
 console.log(`App running in -- ${process.env.NODE_ENV} -- mode`);
 if (process.env.NODE_ENV === 'development') {
-   app.use(morgan('dev'));
+  app.use(morgan('dev'));
 }
 
 // Limit requests from same IP
 const limiter = rateLimit({
-   limit: 100,
-   windowMs: 60 * 60 * 1000,
-   message: 'Request limit reached'
+  limit: 100,
+  windowMs: 60 * 60 * 1000,
+  message: 'Request limit reached'
 });
 app.use('/api', limiter);
 
@@ -50,38 +51,33 @@ app.use(xss());
 
 // Prevent request parameter pollution
 app.use(
-   hpp({
-      whitelist: [
-         'duration',
-         'ratingsAverage',
-         'ratingsQuantity',
-         'maxGroupSize',
-         'difficulty',
-         'price'
-      ]
-   })
+  hpp({
+    whitelist: [
+      'duration',
+      'ratingsAverage',
+      'ratingsQuantity',
+      'maxGroupSize',
+      'difficulty',
+      'price'
+    ]
+  })
 );
 
 // Custom test middleware
 app.use((req, res, next) => {
-   req.requestTime = new Date().toISOString();
-   next();
+  req.requestTime = new Date().toISOString();
+  next();
 });
 
 // ROUTES
-app.get('/', (req, res) => {
-   res.status(200).render('base', {
-      tour: 'The Forest Hiker',
-      user: 'stevent'
-   });
-});
+app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
 
 // Handle bad requests
 app.all('*', (req, res, next) => {
-   next(new AppError(`Route ${req.originalUrl} not found`, 404));
+  next(new AppError(`Route ${req.originalUrl} not found`, 404));
 });
 
 app.use(globalErrorHandler);
