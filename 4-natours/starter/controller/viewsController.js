@@ -22,8 +22,26 @@ exports.getTour = catchAsync(async (req, res, next) => {
     return next(new AppError('Tour not found', 400));
   }
 
-  res.status(200).render('tour', {
-    title: 'The Forest Hiker Tour',
-    tour
-  });
+  res
+    .status(200)
+    .set(
+      'Content-Security-Policy',
+      'connect-src https://*.tiles.mapbox.com https://api.mapbox.com https://events.mapbox.com'
+    )
+    .render('tour', {
+      title: `${tour.name} Tour`,
+      tour
+    });
 });
+
+exports.getLoginForm = (req, res) => {
+  res.status(200).render('login', {
+    title: 'Login'
+  });
+};
+
+exports.getSignUpForm = (req, res) => {
+  res.status(200).render('signUp', {
+    title: 'Sign Up'
+  });
+};
