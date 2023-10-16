@@ -7,5 +7,11 @@ header.header
             alt='Natours logo'
         )
     nav.nav.nav--user
-        a.btn.nav__el(href='/login') Login
-        a.btn.nav__el(href='/signUp') Sign Up
+        if user
+            a.nav__el.nave__el--logout(href='#') Log Out
+            a.nav__el(href='#')
+                img.nav__user-img(src=`/img/users/${user.photo}` alt=`${user.name} photo`)
+                span= user.name.split(' ')[0]
+        else
+            a.btn.nav__el(href='/login') Login
+            a.btn.nav__el(href='/signUp') Sign Up

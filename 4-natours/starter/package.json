@@ -3,16 +3,23 @@
   "version": "1.0.0",
   "description": "Learning node, express, and mongodb",
   "main": "app.js",
+  "targets": {
+    "main": false
+  },
   "scripts": {
     "start": "env NODE_ENV=development nodemon server.js",
     "start:prod": "env NODE_ENV=production nodemon server.js",
     "debug": "nodemon --inspect server.js",
     "delete-data": "env NODE_ENV=LOADER node ./dev-data/data/import-dev-data.js --delete",
-    "import-data": "env NODE_ENV=LOADER node ./dev-data/data/import-dev-data.js --import"
+    "import-data": "env NODE_ENV=LOADER node ./dev-data/data/import-dev-data.js --import",
+    "watch:js": "parcel watch --no-hmr ./public/js/index.js --dist-dir ./public/js/bundled",
+    "build": "parcel build ./public/js/index.js --dist-dir ./public/js/bundled"
   },
   "author": "stevent",
   "license": "ISC",
   "dependencies": {
+    "@babel/polyfill": "^7.12.1",
+    "axios": "^1.5.1",
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.6",
     "dotenv": "^16.3.1",
@@ -31,6 +38,7 @@
     "xss-clean": "^0.1.4"
   },
   "devDependencies": {
+    "buffer": "^6.0.3",
     "eslint": "^8.48.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-prettier": "^9.0.0",
@@ -41,6 +49,7 @@
     "eslint-plugin-react": "^7.33.2",
     "ndb": "^1.1.5",
     "nodemon": "^3.0.1",
+    "parcel": "^2.10.0",
     "prettier": "^3.0.2"
   }
 }

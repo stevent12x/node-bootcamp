@@ -106,6 +106,35 @@ exports.protect = catchAsync(async (req, res, next) => {
   next();
 });
 
+// Only for rendered pages, no error
+exports.isLoggedIn = catchAsync(async (req, res, next) => {
+  if (req.cookies.jwt) {
+    // Check if token is valid
+    const decoded = await promisify(jwt.verify)(
+      req.cookies.jwt,
+      process.env.JWT_SECRET
+    );
+
+    // Check if user still exists
+    const currentUser = await User.findById(decoded.id);
+    if (!currentUser) {
+      return next();
+    }
+
+    // Check if user changed password after token was issued
+    if (currentUser.changedPasswordAfter(decoded.iat)) {
+      return next();
+    }
+
+    // Determine that there is a logged-in user
+    // every template has access to 'locals'
+    res.locals.user = currentUser;
+    return next();
+  }
+
+  next();
+});
+
 // Restrict access to certain routes based on user role
 exports.restrictTo = (...roles) => {
   return (req, res, next) => {
