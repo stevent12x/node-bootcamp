@@ -182,7 +182,7 @@ exports.requestPasswordReset = catchAsync(async (req, res, next) => {
 
     res.status(200).json({
       status: 'success',
-      message: 'Reset password token send successfully'
+      message: 'Reset password token sent successfully'
     });
   } catch (err) {
     user.passwordResetToken = undefined;
