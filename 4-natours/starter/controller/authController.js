@@ -42,7 +42,7 @@ exports.signup = catchAsync(async (req, res, next) => {
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
     role: req.body.role,
-    photo: req.body.photo ? req.body.photo : 'default.jpg'
+    photo: req.body.photo
   });
 
   createAndSendToken(newUser, 201, res);
