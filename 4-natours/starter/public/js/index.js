@@ -3,6 +3,7 @@ import '@babel/polyfill';
 import { login, logout } from './login';
 import { updateSettings } from './updateSettings';
 import { displayMap } from './mapbox';
+import { signup } from './signup';
 
 const $ = document.querySelector.bind(document);
 
@@ -12,6 +13,7 @@ const loginForm = $('.form--login');
 const logoutBtn = $('.nav__el--logout');
 const userDataForm = $('.form-user-data');
 const userPasswordForm = $('.form-user-password');
+const userSignUpForm = $('.form-user-signup');
 
 // Delegation
 if (mapbox) {
@@ -46,5 +48,16 @@ if (userPasswordForm) {
     const passwordConfirm = $('#password-confirm').value;
     e.preventDefault();
     updateSettings({ passwordCurrent, password, passwordConfirm }, 'password');
+  });
+}
+
+if (userSignUpForm) {
+  userSignUpForm.addEventListener('submit', e => {
+    const name = $('#name').value;
+    const email = $('#email').value;
+    const password = $('#password').value;
+    const passwordConfirm = $('#passwordConfirm').value;
+    e.preventDefault();
+    signup(name, email, password, passwordConfirm);
   });
 }
