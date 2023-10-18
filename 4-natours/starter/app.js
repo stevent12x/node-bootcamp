@@ -23,7 +23,6 @@ app.set('views', path.join(__dirname, 'views'));
 
 // Serving static files
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(cookieParser());
 app.use((req, res, next) => {
   res.set('Content-Security-Policy', 'connect-src *');
   next();
@@ -95,6 +94,8 @@ app.use('/api', limiter);
 
 // Body parser - read data from body into req.body
 app.use(express.json({ limit: '10kb' }));
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+app.use(cookieParser());
 
 // Data sanitization against NoSQL query injection
 app.use(mongoSanitize());

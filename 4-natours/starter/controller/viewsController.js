@@ -1,4 +1,5 @@
 const Tour = require('../model/tourModel');
+const User = require('../model/userModel');
 const catchAsync = require('../util/catchAsync');
 const AppError = require('../util/appError');
 
@@ -44,3 +45,19 @@ exports.getAccount = (req, res) => {
     title: 'My Account'
   });
 };
+
+exports.updateUserData = catchAsync(async (req, res, next) => {
+  const updatedUser = await User.findByIdAndUpdate(
+    req.user.id,
+    {
+      name: req.body.name,
+      email: req.body.email
+    },
+    { new: true, runValidators: true }
+  );
+
+  res.status(200).render('account', {
+    title: 'My Account',
+    user: updatedUser
+  });
+});
