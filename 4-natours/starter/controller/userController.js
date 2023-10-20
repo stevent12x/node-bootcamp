@@ -1,19 +1,24 @@
 const multer = require('multer');
+const sharp = require('sharp');
 const User = require('../model/userModel');
 const catchAsync = require('../util/catchAsync');
 const AppError = require('../util/appError');
 const factory = require('./handlerFactory');
 
-const multerStorage = multer.diskStorage({
-  destination: (req, file, callback) => {
-    callback(null, 'public/img/users');
-  },
-  filename: (req, file, callback) => {
-    const ext = file.mimetype.split('/')[1];
-    callback(null, `user-${req.user.id}-${Date.now()}.${ext}`);
-  }
-});
+// Exclude unwanted fields from req
+const sanitizeRequest = (obj, fields) => {
+  const sanitizedObject = {};
+  Object.keys(obj).forEach(el => {
+    if (fields.includes(el)) {
+      sanitizedObject[el] = obj[el];
+    }
+  });
 
+  return sanitizedObject;
+};
+
+// Image uploads with multer package
+const multerStorage = multer.memoryStorage();
 const multerFilter = (req, file, callback) => {
   if (file.mimetype.startsWith('image')) {
     callback(null, true);
@@ -31,15 +36,19 @@ const upload = multer({
 
 exports.uploadUserPhoto = upload.single('photo');
 
-const sanitizeRequest = (obj, fields) => {
-  const sanitizedObject = {};
-  Object.keys(obj).forEach(el => {
-    if (fields.includes(el)) {
-      sanitizedObject[el] = obj[el];
-    }
-  });
+// Resize images with sharp package
+exports.resizeImage = (req, res, next) => {
+  if (!req.file) return next();
 
-  return sanitizedObject;
+  req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
+
+  sharp(req.file.buffer)
+    .resize(500, 500)
+    .toFormat('jpeg')
+    .jpeg({ quality: 90 })
+    .toFile(`public/img/users/${req.file.filename}`);
+
+  next();
 };
 
 // Not for updating passwords
@@ -54,9 +63,6 @@ exports.getCurrentUser = catchAsync(async (req, res, next) => {
 });
 
 exports.updateCurrentUser = catchAsync(async (req, res, next) => {
-  console.log(req.file);
-  console.log(req.body);
-
   // Create error if user tries to post password data
   if (req.body.password || req.body.passwordConfirm) {
     return next(
@@ -68,6 +74,7 @@ exports.updateCurrentUser = catchAsync(async (req, res, next) => {
   }
   // Filter out unwanted field names
   const sanitizedRequest = sanitizeRequest(req.body, ['name', 'email']);
+  if (req.file) sanitizedRequest.photo = req.file.filename;
 
   // Update the User document
   const updatedUser = await User.findByIdAndUpdate(
