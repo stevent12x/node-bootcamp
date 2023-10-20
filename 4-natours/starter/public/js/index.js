@@ -34,10 +34,14 @@ if (logoutBtn) logoutBtn.addEventListener('click', logout);
 
 if (userDataForm) {
   userDataForm.addEventListener('submit', e => {
-    const name = $('#name').value;
-    const email = $('#email').value;
     e.preventDefault();
-    updateSettings({ name, email }, 'data');
+    const form = new FormData();
+    form.append('name', $('#name').value);
+    form.append('email', $('#email').value);
+    form.append('photo', $('#photo').files[0]);
+    console.log(form);
+
+    updateSettings(form, 'data');
   });
 }
 
