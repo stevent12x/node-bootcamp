@@ -1,6 +1,7 @@
 const nodemailer = require('nodemailer');
 const pug = require('pug');
 const htmlToText = require('html-to-text');
+const AppError = require('./appError');
 
 module.exports = class Email {
   constructor(user, url) {
@@ -12,7 +13,15 @@ module.exports = class Email {
 
   newTransport() {
     if (process.env.NODE_ENV === 'production') {
-      return 1;
+      return nodemailer.createTransport({
+        host: process.env.BREVO_HOST,
+        port: process.env.BREVO_PORT,
+        secure: false,
+        auth: {
+          user: process.env.BREVO_USER,
+          pass: process.env.BREVO_KEY
+        }
+      });
     }
 
     return nodemailer.createTransport({
@@ -48,6 +57,17 @@ module.exports = class Email {
   }
 
   async sendWelcome() {
-    this.send('welcome', 'Welcome to Natours!');
+    try {
+      this.send('welcome', 'Welcome to Natours!');
+    } catch (err) {
+      return new AppError(err.data.message, 404);
+    }
+  }
+
+  async sendPasswordReset() {
+    this.send(
+      'passwordReset',
+      'You password reset token (Valid for 10 minutes)'
+    );
   }
 };
