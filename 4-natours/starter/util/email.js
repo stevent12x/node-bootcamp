@@ -57,11 +57,7 @@ module.exports = class Email {
   }
 
   async sendWelcome() {
-    try {
-      this.send('welcome', 'Welcome to Natours!');
-    } catch (err) {
-      return new AppError(err.data.message, 404);
-    }
+    this.send('welcome', 'Welcome to Natours!');
   }
 
   async sendPasswordReset() {
