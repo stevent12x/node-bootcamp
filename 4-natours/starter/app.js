@@ -11,6 +11,7 @@ const cookieParser = require('cookie-parser');
 const tourRouter = require('./route/tourRoutes');
 const userRouter = require('./route/userRoutes');
 const reviewRouter = require('./route/reviewRoutes');
+const bookingsRouter = require('./route/bookingsRoutes');
 const viewRouter = require('./route/viewRoutes');
 
 const AppError = require('./util/appError');
@@ -34,7 +35,9 @@ const scriptSrcUrls = [
   'https://api.mapbox.com/',
   'https://js.stripe.com',
   'https://m.stripe.network',
-  'https://*.cloudflare.com'
+  'https://*.cloudflare.com',
+  'https://js.stripe.com/v3/',
+  'https://cdnjs.cloudflare.com'
 ];
 const styleSrcUrls = [
   'https://mapbox.com/',
@@ -55,7 +58,15 @@ const fontSrcUrls = ['fonts.googleapis.com', 'fonts.gstatic.com'];
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
-      defaultSrc: ["'self'", 'data:', 'blob:', 'https:', 'ws:'],
+      defaultSrc: [
+        "'self'",
+        'data:',
+        'blob:',
+        'https:',
+        'ws:',
+        'https://js.stripe.com/v3/',
+        'https://cdnjs.cloudflare.com'
+      ],
       baseUri: ["'self'"],
       fontSrc: ["'self'", ...fontSrcUrls],
       scriptSrc: ["'self'", 'https:', 'http:', 'blob:', ...scriptSrcUrls],
@@ -128,6 +139,7 @@ app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
+app.use('/api/v1/bookings', bookingsRouter);
 
 // Handle bad requests
 app.all('*', (req, res, next) => {

@@ -4,6 +4,7 @@ import { login, logout } from './login';
 import { updateSettings } from './updateSettings';
 import { displayMap } from './mapbox';
 import { signup } from './signup';
+import { bookTour } from './stripe';
 
 const $ = document.querySelector.bind(document);
 
@@ -14,6 +15,7 @@ const logoutBtn = $('.nav__el--logout');
 const userDataForm = $('.form-user-data');
 const userPasswordForm = $('.form-user-password');
 const userSignUpForm = $('.form-user-signup');
+const bookBtn = $('#book-tour');
 
 // Delegation
 if (mapbox) {
@@ -62,5 +64,13 @@ if (userSignUpForm) {
     const passwordConfirm = $('#passwordConfirm').value;
     e.preventDefault();
     signup(name, email, password, passwordConfirm);
+  });
+}
+
+if (bookBtn) {
+  bookBtn.addEventListener('click', e => {
+    e.target.textContent = 'Processing...';
+    const { tourId } = e.target.dataset;
+    bookTour(tourId);
   });
 }
