@@ -4,7 +4,6 @@ const mongoose = require('mongoose');
 // Uncaught exceptions put the entire node process in an unclean state -
 // we should crash the app and restart
 process.on('uncaughtException', err => {
-  console.log(err.name, err.message);
   process.exit(1);
 });
 
