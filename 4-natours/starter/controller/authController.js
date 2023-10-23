@@ -5,7 +5,6 @@ const catchAsync = require('../util/catchAsync');
 const AppError = require('../util/appError');
 const Email = require('../util/email');
 const crypto = require('crypto');
-const url = require('url');
 
 const signToken = id => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
